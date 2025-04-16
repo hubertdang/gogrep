@@ -1,5 +1,5 @@
 # gogrep
-My own implementation of the `grep` command, written in Go (yes, the picture is my original work, no, I don't do commissions).
+My own implementation of the `grep` command, written in Go (yes, the picture is my original work).
 
 ![grepping_gopher](https://github.com/user-attachments/assets/ed3d41b0-e03b-4d49-8241-1ece9f5dc9f3)
 
