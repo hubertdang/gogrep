@@ -1,6 +1,8 @@
 # gogrep
 My own implementation of the `grep` command, written in Go.
 
+![grepping_gopher](https://github.com/user-attachments/assets/ed3d41b0-e03b-4d49-8241-1ece9f5dc9f3)
+
 ## 🔍 Usage
 
 ### Search a specific file
