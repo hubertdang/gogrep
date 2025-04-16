@@ -2,13 +2,13 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
 	"sync"
-    "flag"
 )
 
 // Search searches for occurences of str in a file named fileName and returns
@@ -52,7 +52,6 @@ func SearchDir(dirName string, str string, wg *sync.WaitGroup, ch chan string) {
 
 		if !entry.IsDir() {
 			for _, match := range Search(fullPath, str) {
-				// fmt.Println(fullPath + ": " + match)
 				ch <- fullPath + ": " + match
 			}
 		} else {
@@ -63,64 +62,64 @@ func SearchDir(dirName string, str string, wg *sync.WaitGroup, ch chan string) {
 	}
 }
 
-// Determines if the user wants to perform a recursive search.
+// RecursiveSearch determines if the user wants to perform a recursive search.
 func RecursiveSearch(rFlag string, numArgs int) bool {
-    return rFlag != "" && numArgs == 0
+	return rFlag != "" && numArgs == 0
 }
 
-// Determines if the user wants to perform a single file search.
+// SingleSearch determines if the user wants to perform a single file search.
 func SingleSearch(rFlag string, numArgs int) bool {
-    return rFlag == "" && numArgs == 2
+	return rFlag == "" && numArgs == 2
 }
 
 func main() {
-    recursive := flag.String("r", "", "recursive search")
-    flag.Parse()
+	recursive := flag.String("r", "", "recursive search")
+	flag.Parse()
 
-    numArgs := flag.NArg()
+	numArgs := flag.NArg()
 
-    numOccurrences := 0
+	numOccurrences := 0
 
-    if RecursiveSearch(*recursive, numArgs) {
-        ch := make(chan string)
-        var wg sync.WaitGroup
+	if RecursiveSearch(*recursive, numArgs) {
+		ch := make(chan string)
+		var wg sync.WaitGroup
 
-        wg.Add(1)
-        go SearchDir(".", *recursive, &wg, ch)
+		wg.Add(1)
+		go SearchDir(".", *recursive, &wg, ch)
 
-        // delegate so main can receive from ch
-        go func() {
-            wg.Wait()
-            defer close(ch) // nothing left to receive
-        }()
+		// delegate so main can receive from ch
+		go func() {
+			wg.Wait()
+			defer close(ch) // nothing left to receive
+		}()
 
-        for occurrence := range ch {
-            fmt.Println(occurrence)
-            numOccurrences++
-        }
-    } else if SingleSearch(*recursive, numArgs) {
-        for _, match := range Search(flag.Arg(0), flag.Arg(1)) {
-            fmt.Println(flag.Arg(0) + ": " + match)
-            numOccurrences++
-        }
-    } else {
-        fmt.Println("Parker: [feels himself starting to disintegrate and doesn't want to")
-        fmt.Println("die] Mister Stark? I don't feel so good...")
-        fmt.Println()
-        fmt.Println("Tony Stark: [trying to be calm] You're all right.")
-        fmt.Println()
-        fmt.Println("Parker: [stumbling] I don't know what's – I don't know what's happening.")
-        fmt.Println("I don't – [Parker falls into Stark's arms, clutching him tight and crying]")
-        fmt.Println("Save me, save me! I don't wanna go, I don't wanna go, Sir, please.")
-        fmt.Println("Please, I don't wanna go. I don't wanna go... I'm sorry.")
-        fmt.Println()
-        fmt.Println("[Parker disintegrates into ashes in Stark's arms]")
-        fmt.Println()
-        fmt.Println("Nebula: [to Tony Stark, seeing Thanos' victory] He did it.")
-        fmt.Println()
-        os.Exit(1)
-    }
+		for occurrence := range ch {
+			fmt.Println(occurrence)
+			numOccurrences++
+		}
+	} else if SingleSearch(*recursive, numArgs) {
+		for _, match := range Search(flag.Arg(0), flag.Arg(1)) {
+			fmt.Println(flag.Arg(0) + ": " + match)
+			numOccurrences++
+		}
+	} else {
+		fmt.Println("Parker: [feels himself starting to disintegrate and doesn't want to")
+		fmt.Println("die] Mister Stark? I don't feel so good...")
+		fmt.Println()
+		fmt.Println("Tony Stark: [trying to be calm] You're all right.")
+		fmt.Println()
+		fmt.Println("Parker: [stumbling] I don't know what's – I don't know what's happening.")
+		fmt.Println("I don't – [Parker falls into Stark's arms, clutching him tight and crying]")
+		fmt.Println("Save me, save me! I don't wanna go, I don't wanna go, Sir, please.")
+		fmt.Println("Please, I don't wanna go. I don't wanna go... I'm sorry.")
+		fmt.Println()
+		fmt.Println("[Parker disintegrates into ashes in Stark's arms]")
+		fmt.Println()
+		fmt.Println("Nebula: [to Tony Stark, seeing Thanos' victory] He did it.")
+		fmt.Println()
+		os.Exit(1)
+	}
 
-    fmt.Println()
-    fmt.Println(numOccurrences, "occurences")
+	fmt.Println()
+	fmt.Println(numOccurrences, "occurences")
 }
