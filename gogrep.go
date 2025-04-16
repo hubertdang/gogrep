@@ -33,7 +33,7 @@ func Search(fileName string, str string) []string {
 
 // SearchDir searches for occurences of str in the directory named name and
 // its subdirectories and prints them.
-func SearchDir(dirName string, str string, wg *sync.WaitGroup) {
+func SearchDir(dirName string, str string, wg *sync.WaitGroup, ch chan string) {
 	defer wg.Done()
 
 	entries, err := os.ReadDir(dirName)
@@ -51,19 +51,36 @@ func SearchDir(dirName string, str string, wg *sync.WaitGroup) {
 
 		if !entry.IsDir() {
 			for _, match := range Search(fullPath, str) {
-				fmt.Println(fullPath + ": " + match)
+				// fmt.Println(fullPath + ": " + match)
+				ch <- fullPath + ": " + match
 			}
 		} else {
 			// new goroutine to search each directory
 			wg.Add(1)
-			go SearchDir(fullPath, str, wg)
+			go SearchDir(fullPath, str, wg, ch)
 		}
 	}
 }
 
 func main() {
+	ch := make(chan string)
 	var wg sync.WaitGroup
+
 	wg.Add(1)
-	SearchDir(".", "test", &wg)
-	wg.Wait()
+	go SearchDir(".", "test", &wg, ch)
+
+	// delegate so main can receive from ch
+	go func() {
+		wg.Wait()
+		defer close(ch) // nothing left to receive
+	}()
+
+	numOccurrences := 0
+	for occurrence := range ch {
+		fmt.Println(occurrence)
+		numOccurrences++
+	}
+
+	fmt.Println()
+	fmt.Println(numOccurrences, "occurences")
 }
