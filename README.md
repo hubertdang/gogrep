@@ -21,7 +21,7 @@ fakefile: with a test
 hubert@hubertlaptop:~/gogrep$ gogrep -r test
 README.md: go install github.com/hubertdang/gogrep@latest
 anotherfakefile: testing this
-anotherfakefile: testmynuts
+anotherfakefile: testmygrep
 fakefile: there was a test
 fakefile: with a test
 testdir/testfile: test
